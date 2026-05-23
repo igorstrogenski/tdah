@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#b8742a" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Ideias" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icon.png" />
+  <title>TDAH Ideias</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    html, body {
+      height: 100%;
+      background: #f5f0e8;
+      font-family: 'DM Mono', monospace;
+      -webkit-font-smoothing: antialiased;
+      overscroll-behavior: none;
+    }
+
+    .app {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 36px 20px 120px;
+      min-height: 100vh;
+    }
+
+    /* HEADER */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 36px;
+    }
+    .header h1 {
+      font-family: 'Instrument Serif', serif;
+      font-size: 2.2rem;
+      color: #1a1208;
+      line-height: 1.1;
+    }
+    .header h1 em { font-style: italic; color: #b8742a; }
+    .header p { font-size: 0.68rem; color: #8a7a60; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 5px; }
+    .btn-settings {
+      background: none;
+      border: 1.5px solid #d4c9a8;
+      color: #8a7a60;
+      width: 38px; height: 38px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* INPUT */
+    .input-area {
+      background: #fffdf7;
+      border: 1.5px solid #d4c9a8;
+      padding: 14px;
+      margin-bottom: 28px;
+      box-shadow: 3px 3px 0 #d4c9a8;
+    }
+    textarea {
+      width: 100%;
+      min-height: 80px;
+      border: none;
+      background: transparent;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.9rem;
+      color: #1a1208;
+      resize: none;
+      outline: none;
+      line-height: 1.7;
+    }
+    textarea::placeholder { color: #c4b898; }
+    .input-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #e8dfcc;
+    }
+    .hint { font-size: 0.63rem; color: #b0a080; letter-spacing: 0.05em; text-transform: uppercase; }
+    .btn-add {
+      background: #1a1208;
+      color: #f5f0e8;
+      border: none;
+      padding: 9px 18px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      -webkit-appearance: none;
+    }
+    .btn-add:active { opacity: 0.8; }
+
+    /* SECTION LABEL */
+    .section-label {
+      font-size: 0.62rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #8a7a60;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: #d4c9a8; }
+
+    /* IDEA CARDS */
+    .ideas-list { margin-bottom: 24px; }
+    .idea-card {
+      background: #fffdf7;
+      border: 1.5px solid #d4c9a8;
+      padding: 12px 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      box-shadow: 2px 2px 0 #d4c9a8;
+      margin-bottom: 8px;
+      animation: slideIn 0.2s ease;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .idea-text { flex: 1; font-size: 0.85rem; color: #2a1f0e; line-height: 1.6; }
+    .idea-meta { font-size: 0.62rem; color: #b0a080; margin-top: 3px; }
+    .btn-delete {
+      background: none; border: none; cursor: pointer;
+      color: #c4b898; font-size: 1.2rem; line-height: 1;
+      flex-shrink: 0; padding: 0; margin-top: -2px;
+    }
+    .btn-delete:active { color: #b8742a; }
+
+    /* EMPTY */
+    .empty {
+      text-align: center;
+      padding: 40px 20px;
+      color: #b0a080;
+      font-size: 0.78rem;
+      border: 1.5px dashed #d4c9a8;
+      margin-bottom: 28px;
+      line-height: 1.8;
+    }
+    .empty .big {
+      font-family: 'Instrument Serif', serif;
+      font-size: 2.4rem;
+      color: #d4c9a8;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    /* ORGANIZE BUTTON */
+    .btn-organize {
+      width: 100%;
+      background: #b8742a;
+      color: #fffdf7;
+      border: none;
+      padding: 15px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      -webkit-appearance: none;
+    }
+    .btn-organize:disabled { background: #c4b898; cursor: not-allowed; }
+    .btn-organize:not(:disabled):active { opacity: 0.85; }
+
+    .api-warning {
+      font-size: 0.7rem;
+      color: #b8742a;
+      text-align: center;
+      margin-top: 8px;
+    }
+    .api-warning button {
+      background: none; border: none; color: #b8742a;
+      font-family: 'DM Mono', monospace; font-size: 0.7rem;
+      text-decoration: underline; cursor: pointer;
+    }
+
+    /* SPINNER */
+    .spinner {
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      flex-shrink: 0;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* RESULT */
+    .result-box {
+      margin-top: 20px;
+      background: #fffdf7;
+      border: 1.5px solid #b8742a;
+      box-shadow: 4px 4px 0 #b8742a;
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .result-header {
+      background: #b8742a;
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .result-header-label { font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; color: #fffdf7; }
+    .btn-copy {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.4);
+      color: #fffdf7;
+      padding: 5px 12px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    .result-content {
+      padding: 20px;
+      font-size: 0.85rem;
+      color: #2a1f0e;
+      line-height: 1.9;
+    }
+    .result-content h2 {
+      font-family: 'Instrument Serif', serif;
+      color: #b8742a;
+      margin: 16px 0 6px;
+      font-size: 1.15rem;
+      font-weight: normal;
+    }
+    .result-content h3 {
+      font-family: 'Instrument Serif', serif;
+      color: #8a7a60;
+      margin: 10px 0 4px;
+      font-size: 0.95rem;
+      font-weight: normal;
+    }
+    .result-content .bullet { padding-left: 14px; margin-bottom: 4px; }
+    .result-content .motivacao { font-style: italic; color: #8a7a60; margin-top: 14px; }
+    .result-content .spacer { height: 6px; }
+
+    /* CLEAR */
+    .btn-clear {
+      margin-top: 14px;
+      width: 100%;
+      background: transparent;
+      border: 1.5px solid #d4c9a8;
+      color: #8a7a60;
+      padding: 11px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      -webkit-appearance: none;
+    }
+    .btn-clear:active { border-color: #b8742a; color: #b8742a; }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(26,18,8,0.6);
+      z-index: 200;
+      display: flex; align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    .modal {
+      background: #fffdf7;
+      border: 1.5px solid #d4c9a8;
+      box-shadow: 6px 6px 0 #d4c9a8;
+      padding: 28px;
+      width: 100%;
+      max-width: 400px;
+    }
+    .modal h2 {
+      font-family: 'Instrument Serif', serif;
+      font-size: 1.4rem;
+      color: #1a1208;
+      margin-bottom: 6px;
+      font-weight: normal;
+    }
+    .modal p {
+      font-size: 0.72rem;
+      color: #8a7a60;
+      line-height: 1.7;
+      margin-bottom: 18px;
+    }
+    .modal p a { color: #b8742a; }
+    .modal label {
+      font-size: 0.66rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #8a7a60;
+      display: block;
+      margin-bottom: 6px;
+    }
+    .modal input {
+      width: 100%;
+      border: 1.5px solid #d4c9a8;
+      background: #f5f0e8;
+      padding: 10px 12px;
+      font-family: 'DM Mono', monospace;
+      font-size: 0.8rem;
+      color: #1a1208;
+      outline: none;
+      margin-bottom: 10px;
+      -webkit-appearance: none;
+    }
+    .modal .seguranca {
+      font-size: 0.66rem;
+      color: #b0a080;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+    .modal-btns { display: flex; gap: 10px; }
+    .btn-cancel {
+      flex: 1; background: transparent; border: 1.5px solid #d4c9a8;
+      color: #8a7a60; padding: 10px;
+      font-family: 'DM Mono', monospace; font-size: 0.72rem;
+      letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer;
+    }
+    .btn-save {
+      flex: 2; background: #1a1208; color: #fffdf7; border: none; padding: 10px;
+      font-family: 'DM Mono', monospace; font-size: 0.72rem;
+      letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- MODAL CONFIGURAÇÕES -->
+  <div class="modal-overlay" id="modal" style="display:none">
+    <div class="modal">
+      <h2>Configurações</h2>
+      <p>
+        Para usar a IA, você precisa de uma chave da API da Anthropic.<br>
+        Crie a sua em <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> — tem crédito gratuito pra começar.
+      </p>
+      <label>Sua chave API (sk-ant-...)</label>
+      <input type="password" id="apiKeyInput" placeholder="sk-ant-api03-..." />
+      <p class="seguranca">🔒 A chave fica salva só no seu celular. Nunca é enviada a nenhum servidor nosso.</p>
+      <div class="modal-btns">
+        <button class="btn-cancel" onclick="fecharModal()">Cancelar</button>
+        <button class="btn-save" onclick="salvarChave()">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <div class="header">
+    <div>
+      <h1>Suas <em>ideias</em><br>da semana</h1>
+      <p id="contagem">0 ideias salvas</p>
+    </div>
+    <button class="btn-settings" onclick="abrirModal()" title="Configurações">⚙</button>
+  </div>
+
+  <!-- INPUT -->
+  <div class="input-area">
+    <textarea id="inputIdeia" placeholder="Joga a ideia aqui... qualquer coisa, bruto mesmo." onkeydown="teclaEnter(event)"></textarea>
+    <div class="input-footer">
+      <span class="hint">Ctrl+Enter para salvar</span>
+      <button class="btn-add" onclick="adicionarIdeia()">Salvar ideia</button>
+    </div>
+  </div>
+
+  <!-- LISTA DE IDEIAS -->
+  <div id="listaContainer"></div>
+
+  <!-- ORGANIZAR -->
+  <div id="organizarSection">
+    <button class="btn-organize" id="btnOrganizar" onclick="organizar()" disabled>
+      ✦ Organizar tudo com IA
+    </button>
+    <div id="apiWarning" class="api-warning" style="display:none">
+      ⚠ Configure sua chave API antes →
+      <button onclick="abrirModal()">configurações</button>
+    </div>
+    <div id="resultado"></div>
+    <button class="btn-clear" id="btnLimpar" onclick="limparTudo()" style="display:none">
+      Limpar tudo · nova semana
+    </button>
+  </div>
+
+</div>
+
+<script>
+  const CHAVE_IDEIAS = 'tdah-ideias-v1';
+  const CHAVE_API = 'tdah-apikey-v1';
+
+  let ideias = [];
+  let apiKey = '';
+  let organizando = false;
+
+  // ── INIT ──
+  function init() {
+    try { ideias = JSON.parse(localStorage.getItem(CHAVE_IDEIAS)) || []; } catch { ideias = []; }
+    apiKey = localStorage.getItem(CHAVE_API) || '';
+    if (apiKey) document.getElementById('apiKeyInput').value = apiKey;
+    renderizar();
+  }
+
+  // ── STORAGE ──
+  function salvar() {
+    localStorage.setItem(CHAVE_IDEIAS, JSON.stringify(ideias));
+  }
+
+  // ── FORMAT DATE ──
+  function formatarData(ts) {
+    const d = new Date(ts);
+    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) +
+      ' ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  // ── ADICIONAR IDEIA ──
+  function adicionarIdeia() {
+    const input = document.getElementById('inputIdeia');
+    const texto = input.value.trim();
+    if (!texto) return;
+    ideias.unshift({ id: Date.now(), texto, ts: Date.now() });
+    salvar();
+    input.value = '';
+    input.focus();
+    renderizar();
+  }
+
+  function teclaEnter(e) {
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      adicionarIdeia();
+    }
+  }
+
+  // ── DELETAR ──
+  function deletarIdeia(id) {
+    ideias = ideias.filter(i => i.id !== id);
+    salvar();
+    renderizar();
+  }
+
+  // ── LIMPAR ──
+  function limparTudo() {
+    if (!confirm('Limpar todas as ideias e começar nova semana?')) return;
+    ideias = [];
+    salvar();
+    document.getElementById('resultado').innerHTML = '';
+    renderizar();
+  }
+
+  // ── RENDERIZAR ──
+  function renderizar() {
+    const n = ideias.length;
+    const plural = n !== 1;
+    document.getElementById('contagem').textContent =
+      `${n} ideia${plural ? 's' : ''} salva${plural ? 's' : ''}`;
+
+    const container = document.getElementById('listaContainer');
+    const btnOrganizar = document.getElementById('btnOrganizar');
+    const btnLimpar = document.getElementById('btnLimpar');
+    const apiWarning = document.getElementById('apiWarning');
+
+    btnOrganizar.disabled = organizando || n === 0;
+    btnLimpar.style.display = n > 0 ? 'block' : 'none';
+    apiWarning.style.display = (!apiKey && n > 0) ? 'block' : 'none';
+
+    if (n === 0) {
+      container.innerHTML = `
+        <div class="empty">
+          <span class="big">✦</span>
+          Nenhuma ideia ainda.<br>Começa a anotar!
+        </div>`;
+      return;
+    }
+
+    const label = `<div class="section-label">ideias da semana</div>`;
+    const cards = ideias.map(ideia => `
+      <div class="idea-card">
+        <div style="flex:1">
+          <div class="idea-text">${escHtml(ideia.texto)}</div>
+          <div class="idea-meta">${formatarData(ideia.ts)}</div>
+        </div>
+        <button class="btn-delete" onclick="deletarIdeia(${ideia.id})">×</button>
+      </div>
+    `).join('');
+
+    container.innerHTML = label + `<div class="ideas-list">${cards}</div>`;
+  }
+
+  function escHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // ── ORGANIZAR COM IA ──
+  async function organizar() {
+    if (!apiKey) { abrirModal(); return; }
+    if (ideias.length === 0 || organizando) return;
+
+    organizando = true;
+    const btn = document.getElementById('btnOrganizar');
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spinner"></div> Organizando com IA...';
+
+    const resultDiv = document.getElementById('resultado');
+    resultDiv.innerHTML = '';
+
+    const lista = ideias
+      .map((ideia, i) => `${i + 1}. [${formatarData(ideia.ts)}] ${ideia.texto}`)
+      .join('\n');
+
+    try {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true',
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1024,
+          system: `Você é um assistente pessoal que organiza ideias soltas de uma pessoa com TDAH.
+Recebe uma lista de ideias brutas anotadas ao longo da semana e devolve um resumo organizado, claro e motivador.
+
+Regras:
+- Agrupe por tema com títulos ## em português
+- Use bullet points simples (-)
+- Reescreva as ideias de forma clara e completa, sem perder o sentido original
+- Se houver tarefas, coloque em ## Ações para tomar
+- Se houver ideias criativas, coloque em ## Ideias para desenvolver
+- Termine com uma linha motivadora curta entre underscores _assim_
+- Tom: direto, cálido, sem frescura`,
+          messages: [{
+            role: 'user',
+            content: `Aqui estão minhas ideias da semana:\n\n${lista}\n\nOrganiza isso pra mim.`
+          }]
+        })
+      });
+
+      const data = await response.json();
+      if (data.error) throw new Error(data.error.message);
+
+      const texto = (data.content || []).map(b => b.text || '').join('');
+      resultDiv.innerHTML = renderResultado(texto);
+
+    } catch (e) {
+      resultDiv.innerHTML = `<div class="result-box"><div class="result-content" style="color:#b8742a">Erro: ${escHtml(e.message)}<br><br>Verifique sua chave API nas configurações.</div></div>`;
+    }
+
+    organizando = false;
+    btn.disabled = ideias.length === 0;
+    btn.innerHTML = '✦ Organizar tudo com IA';
+  }
+
+  function renderResultado(texto) {
+    const linhas = texto.split('\n').map(linha => {
+      if (linha.startsWith('## ')) return `<h2>${escHtml(linha.slice(3))}</h2>`;
+      if (linha.startsWith('### ')) return `<h3>${escHtml(linha.slice(4))}</h3>`;
+      if (linha.startsWith('- ') || linha.startsWith('* ')) return `<div class="bullet">• ${escHtml(linha.slice(2))}</div>`;
+      if (linha.startsWith('_') && linha.endsWith('_')) return `<div class="motivacao">${escHtml(linha.slice(1,-1))}</div>`;
+      if (linha.trim() === '') return '<div class="spacer"></div>';
+      return `<div>${escHtml(linha)}</div>`;
+    }).join('');
+
+    return `
+      <div class="result-box">
+        <div class="result-header">
+          <span class="result-header-label">Suas ideias organizadas</span>
+          <button class="btn-copy" onclick="copiar(this)">Copiar</button>
+        </div>
+        <div class="result-content" id="resultContent">${linhas}</div>
+      </div>`;
+  }
+
+  function copiar(btn) {
+    const content = document.getElementById('resultContent');
+    navigator.clipboard.writeText(content.innerText).then(() => {
+      btn.textContent = 'Copiado ✓';
+      setTimeout(() => btn.textContent = 'Copiar', 2000);
+    });
+  }
+
+  // ── MODAL ──
+  function abrirModal() {
+    document.getElementById('modal').style.display = 'flex';
+  }
+
+  function fecharModal() {
+    document.getElementById('modal').style.display = 'none';
+  }
+
+  function salvarChave() {
+    const val = document.getElementById('apiKeyInput').value.trim();
+    apiKey = val;
+    localStorage.setItem(CHAVE_API, val);
+    fecharModal();
+    renderizar();
+  }
+
+  // Fechar modal clicando fora
+  document.getElementById('modal').addEventListener('click', function(e) {
+    if (e.target === this) fecharModal();
+  });
+
+  // ── START ──
+  init();
+</script>
+</body>
+</html>
