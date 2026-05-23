@@ -54,16 +54,18 @@ Seu app estará em: `https://seuusuario.github.io/tdah-ideias`
 
 ---
 
-## Configurar a chave de IA
+## Configurar a chave de IA (gratuito, sem cartão)
 
-Na primeira vez que usar o botão "Organizar", o app vai pedir sua chave da API da Anthropic.
+Na primeira vez que usar o botão "Organizar", o app vai pedir sua chave do Google Gemini.
 
-1. Acesse [console.anthropic.com](https://console.anthropic.com)
-2. Crie uma conta — tem crédito gratuito pra começar
-3. Vá em **API Keys** e crie uma chave
-4. Cole no app (⚙ no canto superior direito)
+1. Acesse [aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey)
+2. Entre com sua conta Google
+3. Clique em **"Create API Key"**
+4. Copie a chave — começa com `AIza...`
+5. Cole no app (⚙ no canto superior direito)
 
-A chave fica salva só no seu celular. Nunca sai do dispositivo.
+A chave fica salva só no seu dispositivo. Nunca sai dele.  
+O Gemini tem um plano gratuito generoso — dá pra usar bastante sem pagar nada.
 
 ---
 
